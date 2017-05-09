@@ -28,7 +28,7 @@ public class RawTypeProvider implements TypeProvider<ServiceConfiguration> {
     public List<TypeElement> describeTypes(ServiceConfiguration configuration, DescribeServiceRequest describeServiceRequest) {
         try {
             if (describeServiceRequest.getConfigurationValues() != null) {
-                return describeManager.getListTypeElementFromSwaggerDeffinition(configuration);
+                return describeManager.getListTypeElement(configuration);
             }
         } catch (Exception e) {
             throw new RuntimeException(e);

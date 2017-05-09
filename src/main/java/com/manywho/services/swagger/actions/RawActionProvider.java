@@ -1,5 +1,6 @@
 package com.manywho.services.swagger.actions;
 
+import com.google.common.collect.Lists;
 import com.manywho.sdk.api.describe.DescribeServiceActionResponse;
 import com.manywho.sdk.api.describe.DescribeServiceRequest;
 import com.manywho.sdk.services.actions.ActionProvider;
@@ -20,6 +21,10 @@ public class RawActionProvider implements ActionProvider<ServiceConfiguration> {
 
     @Override
     public List<DescribeServiceActionResponse> describeActions(ServiceConfiguration configuration, DescribeServiceRequest request) {
-        return describeManager.getListActionsFromSwaggerDeffinition(configuration);
+        if (configuration.getSwaggerUrl() != null) {
+            return describeManager.getListActions(configuration);
+        } else {
+            return Lists.newArrayList();
+        }
     }
 }
