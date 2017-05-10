@@ -7,9 +7,13 @@ This service allows you to connect ManyWho with an API with swagger description.
 
 ## Configuration
 
+ - **Swagger Description Url**
+
+This is the url of your api description, in our case is http://petstore.swagger.io/v2/swagger.json
+
 ### Actions
 
-Actions are supported for not nested types, and only for one type for input, and one type for output.
+Actions are supported for not nested types, and only for one type/object for input, and one type/object for output.
 
 E.g. type user
 {
@@ -17,16 +21,14 @@ E.g. type user
     "id": "12345"
 }
 
-The choice forse HTTPS forse to make the calls using https. If this is not selected it will use scheme in the 
+The external ID will be a random UUID.
+
+The choice forse HTTPS forse to make the calls using https. If this is not selected it will use scheme in the
 swagger definition, or if there isn't any it will use http.
 
 ### Save, Load and Create
 
-You will need to provide two configuration value, and we will Explain these values using the example [swagger petstore project](http://petstore.swagger.io)
-
- - **Swagger Description Url**
-
-This is the url of your api description, in our case is http://petstore.swagger.io/v2/swagger.json
+We will explain these values using the example [swagger petstore project](http://petstore.swagger.io)
 
  - **Swagger ManyWho Mapper**
 
@@ -76,6 +78,7 @@ The case of **update** it is similar, but in this case the verb is "put", and th
 
 Take a look now to the externalId, in this case is clear that the username is the value that unique identify the type "User". 
 (The paramUsername is just a param, but in the update we can see how this parameter is realy the property username of the User Type)
+
 
 ## Usage
 
