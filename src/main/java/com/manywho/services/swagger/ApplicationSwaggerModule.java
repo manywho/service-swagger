@@ -6,7 +6,7 @@ import com.manywho.sdk.services.actions.ActionProvider;
 import com.manywho.sdk.services.types.TypeProvider;
 import com.manywho.services.swagger.actions.RawActionHandler;
 import com.manywho.services.swagger.actions.RawActionProvider;
-import com.manywho.services.swagger.managers.DescribeManager;
+import com.manywho.services.swagger.description.manager.DescribeManager;
 import com.manywho.services.swagger.types.RawTypeProvider;
 
 public class ApplicationSwaggerModule extends AbstractModule {

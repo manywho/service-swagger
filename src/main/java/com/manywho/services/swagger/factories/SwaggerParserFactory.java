@@ -10,7 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 
-public class SwaggerFactory {
+public class SwaggerParserFactory {
     public Swagger createSwaggerParser(ServiceConfiguration configuration) {
 
         if (!StringUtils.isEmpty(configuration.getBasicAuthPassword()) || !StringUtils.isEmpty(configuration.getBasicAuthUserName())) {

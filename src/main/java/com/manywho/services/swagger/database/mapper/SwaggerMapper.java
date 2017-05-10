@@ -1,6 +1,4 @@
-package com.manywho.services.swagger.entities;
-
-import com.manywho.services.swagger.entities.mapper.DataBase;
+package com.manywho.services.swagger.database.mapper;
 
 public class SwaggerMapper {
     private String manyWhoType;

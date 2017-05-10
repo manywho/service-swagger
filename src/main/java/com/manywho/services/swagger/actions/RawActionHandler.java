@@ -1,32 +1,23 @@
 package com.manywho.services.swagger.actions;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.manywho.sdk.api.InvokeType;
 import com.manywho.sdk.api.run.EngineValue;
 import com.manywho.sdk.api.run.elements.config.ServiceRequest;
 import com.manywho.sdk.api.run.elements.config.ServiceResponse;
 import com.manywho.sdk.services.actions.ActionHandler;
 import com.manywho.services.swagger.ServiceConfiguration;
-import com.manywho.services.swagger.factories.HttpClientFactory;
-import com.manywho.services.swagger.factories.SwaggerFactory;
-import com.manywho.services.swagger.services.MapperService;
+import com.manywho.services.swagger.client.HttpClientSwagger;
+import com.manywho.services.swagger.factories.SwaggerParserFactory;
+import com.manywho.services.swagger.database.services.MapperService;
 import io.swagger.models.Path;
 import io.swagger.models.Swagger;
 import io.swagger.models.properties.RefProperty;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpEntity;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.util.EntityUtils;
 
 import javax.inject.Inject;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.List;
@@ -34,13 +25,11 @@ import java.util.Map;
 
 public class RawActionHandler implements ActionHandler<ServiceConfiguration> {
     private MapperService mapperService;
-    private HttpClientFactory httpClientFactory;
-    private SwaggerFactory swaggerFactory;
+    private SwaggerParserFactory swaggerFactory;
 
     @Inject
-    public RawActionHandler(MapperService mapperService, HttpClientFactory httpClientFactory, SwaggerFactory swaggerFactory) {
+    public RawActionHandler(MapperService mapperService, SwaggerParserFactory swaggerFactory) {
         this.mapperService = mapperService;
-        this.httpClientFactory = httpClientFactory;
         this.swaggerFactory = swaggerFactory;
     }
 
@@ -63,7 +52,7 @@ public class RawActionHandler implements ActionHandler<ServiceConfiguration> {
         Path path = getPath(swagger, actionPath);
         String bodyRequest;
         StringEntity entity;
-        CloseableHttpClient clientClosable = httpClientFactory.createClosableClient(configuration);
+        HttpClientSwagger httpClientSwagger = new HttpClientSwagger(configuration);
         try {
             bodyRequest = mapperService.requestBody(serviceRequest.getInputs());
             entity = new StringEntity(bodyRequest);
@@ -82,13 +71,13 @@ public class RawActionHandler implements ActionHandler<ServiceConfiguration> {
 
             entity.setContentType("application/json");
             httppost.setEntity(entity);
-            object = executeOperation(clientClosable, httppost);
+            object = httpClientSwagger.executeOperationHashMap(httppost);
             responseObjectName = ((RefProperty) path.getPost().getResponses().get("200").getSchema()).getSimpleRef();
 
         } else if (getVerb(actionPath).equals("get")) {
             HttpGet httpGet = new HttpGet(uri);
             entity.setContentType("application/json");
-            object = executeOperation(clientClosable, httpGet);
+            object = httpClientSwagger.executeOperationHashMap(httpGet);
             responseObjectName = ((RefProperty) path.getGet().getResponses().get("200").getSchema()).getSimpleRef();
         } else {
             // todo it should be ignore
@@ -149,36 +138,5 @@ public class RawActionHandler implements ActionHandler<ServiceConfiguration> {
         }
 
         throw new RuntimeException(String.format("Verb in uri {%s} not supported", uri));
-    }
-
-    private HashMap<String, Object> executeOperation(CloseableHttpClient closeableHttpClient, HttpRequestBase httpClient) {
-
-        try {
-            // Create a custom response handler
-            ResponseHandler<String> responseHandler = response -> {
-                int status = response.getStatusLine().getStatusCode();
-                if (status >= 200 && status < 300) {
-                    HttpEntity entity = response.getEntity();
-                    return entity != null ? EntityUtils.toString(entity) : null;
-                } else {
-                    throw new ClientProtocolException("Unexpected response status: " + status);
-                }
-            };
-            String responseBody = closeableHttpClient.execute(httpClient, responseHandler);
-            ObjectMapper mapper = new ObjectMapper();
-            if (StringUtils.isEmpty(responseBody)) {
-                return new HashMap<>();
-            }
-            return mapper.readValue(responseBody, HashMap.class);
-
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
-        } finally {
-            try {
-                closeableHttpClient.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
     }
 }

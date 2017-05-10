@@ -1,4 +1,4 @@
-package com.manywho.services.swagger.services;
+package com.manywho.services.swagger.description;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,8 +20,8 @@ public class SwaggerDefinitionService {
         List<TypeElementProperty> properties = Lists.newArrayList();
         List<TypeElementPropertyBinding> propertyBindings = Lists.newArrayList();
 
-        for (Map.Entry<String, Property> property : entry.getValue().getProperties().entrySet()) {
-            ContentType contentType = TypeConverterUtil.convertFromSwaggerToManyWho(property.getValue().getType(), property.getValue().getFormat());
+        for(Map.Entry<String, Property> property: entry.getValue().getProperties().entrySet()) {
+            ContentType contentType =  TypeConverterUtil.convertFromSwaggerToManyWho(property.getValue().getType(), property.getValue().getFormat());
             properties.add(new TypeElementProperty(property.getKey(), contentType));
             propertyBindings.add(new TypeElementPropertyBinding(property.getKey(), property.getKey(), contentType.toString()));
         }
@@ -39,17 +39,17 @@ public class SwaggerDefinitionService {
         mObject.setExternalId("");
         List<com.manywho.sdk.api.run.elements.type.Property> properties = new ArrayList<>();
 
-        for (Map.Entry<String, Property> p : entry.getValue().getProperties().entrySet()) {
+        for (Map.Entry<String, Property>  propertyEntry:entry.getValue().getProperties().entrySet()) {
             com.manywho.sdk.api.run.elements.type.Property property = new com.manywho.sdk.api.run.elements.type.Property();
-            property.setDeveloperName(p.getKey());
-            property.setContentType(TypeConverterUtil.convertFromSwaggerToManyWho(p.getValue().getType(), p.getValue().getFormat()));
-            Object hashMap = ((LinkedHashMap) object).get(p.getKey());
+            property.setDeveloperName(propertyEntry.getKey());
+            property.setContentType(TypeConverterUtil.convertFromSwaggerToManyWho(propertyEntry.getValue().getType(), propertyEntry.getValue().getFormat()));
+            Object hashMap = ((LinkedHashMap) object).get(propertyEntry.getKey());
 
             if (hashMap != null) {
                 property.setContentValue(hashMap.toString());
             }
 
-            if (Objects.equals(p.getKey(), externalIdName)) {
+            if (Objects.equals(propertyEntry.getKey(), externalIdName)) {
                 mObject.setExternalId(hashMap.toString());
             }
 
@@ -69,8 +69,8 @@ public class SwaggerDefinitionService {
     public String getEntryString(MObject mObject, Map.Entry<String, Model> entry) {
         HashMap<String, Object> properites = new HashMap<>();
 
-        for (Map.Entry<String, Property> swaggerProperty : entry.getValue().getProperties().entrySet()) {
-            for (com.manywho.sdk.api.run.elements.type.Property manywhoProperty : mObject.getProperties()) {
+        for (Map.Entry<String, Property>  swaggerProperty:entry.getValue().getProperties().entrySet()) {
+            for (com.manywho.sdk.api.run.elements.type.Property manywhoProperty:mObject.getProperties()) {
                 if (Objects.equals(manywhoProperty.getDeveloperName(), swaggerProperty.getKey())) {
                     properites.put(swaggerProperty.getKey(), TypeConverterUtil.getPropertyValue(swaggerProperty.getValue(), manywhoProperty));
                 }
@@ -79,7 +79,7 @@ public class SwaggerDefinitionService {
         ObjectMapper mapper = new ObjectMapper();
         String entity = null;
         try {
-            entity = mapper.writeValueAsString(properites);
+             entity = mapper.writeValueAsString(properites);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }

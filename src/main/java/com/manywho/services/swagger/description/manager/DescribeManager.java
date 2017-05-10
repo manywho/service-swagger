@@ -1,4 +1,4 @@
-package com.manywho.services.swagger.managers;
+package com.manywho.services.swagger.description.manager;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -8,8 +8,8 @@ import com.manywho.sdk.api.describe.DescribeValue;
 import com.manywho.sdk.api.draw.elements.type.TypeElement;
 import com.manywho.services.swagger.ServiceConfiguration;
 import com.manywho.services.swagger.exception.NotSupportedTypeException;
-import com.manywho.services.swagger.factories.SwaggerFactory;
-import com.manywho.services.swagger.services.SwaggerDefinitionService;
+import com.manywho.services.swagger.factories.SwaggerParserFactory;
+import com.manywho.services.swagger.description.SwaggerDefinitionService;
 import io.swagger.models.Model;
 import io.swagger.models.Path;
 import io.swagger.models.RefModel;
@@ -24,10 +24,10 @@ import java.util.Map;
 
 public class DescribeManager {
     private SwaggerDefinitionService swaggerDefinitionService;
-    private SwaggerFactory swaggerFactory;
+    private SwaggerParserFactory swaggerFactory;
 
     @Inject
-    public DescribeManager(SwaggerDefinitionService swaggerDefinitionService, SwaggerFactory swaggerFactory) {
+    public DescribeManager(SwaggerDefinitionService swaggerDefinitionService, SwaggerParserFactory swaggerFactory) {
         this.swaggerDefinitionService = swaggerDefinitionService;
         this.swaggerFactory = swaggerFactory;
     }
@@ -88,7 +88,7 @@ public class DescribeManager {
         return listOfTypeElements;
     }
 
-    Map.Entry<String, Model> getEntryDefinition(ServiceConfiguration serviceConfiguration, String type) {
+    public Map.Entry<String, Model> getEntryDefinition(ServiceConfiguration serviceConfiguration, String type) {
         Swagger swagger = swaggerFactory.createSwaggerParser(serviceConfiguration);
         Map<String, Model> definitions = swagger.getDefinitions();
 

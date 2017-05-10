@@ -1,7 +1,7 @@
-package com.manywho.services.swagger.factories;
+package com.manywho.services.swagger.database.factory;
 
 import com.manywho.services.swagger.ServiceConfiguration;
-import com.manywho.services.swagger.services.ManyWhoRelationMapperService;
+import com.manywho.services.swagger.database.services.ManyWhoRelationMapperService;
 
 public class ManyWhoRelationMapperFactory {
     public ManyWhoRelationMapperService createManyWhoRelationMapper(ServiceConfiguration serviceConfiguration) {

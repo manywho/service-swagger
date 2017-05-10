@@ -1,4 +1,4 @@
-package com.manywho.services.swagger.entities.mapper;
+package com.manywho.services.swagger.database.mapper;
 
 public class Parameter {
     private String type;

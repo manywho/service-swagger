@@ -4,7 +4,7 @@ import com.manywho.sdk.api.describe.DescribeServiceRequest;
 import com.manywho.sdk.api.draw.elements.type.TypeElement;
 import com.manywho.sdk.services.types.TypeProvider;
 import com.manywho.services.swagger.ServiceConfiguration;
-import com.manywho.services.swagger.managers.DescribeManager;
+import com.manywho.services.swagger.description.manager.DescribeManager;
 
 import javax.inject.Inject;
 import java.util.ArrayList;

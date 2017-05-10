@@ -1,12 +1,12 @@
-package com.manywho.services.swagger.services;
+package com.manywho.services.swagger.database.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import com.manywho.sdk.api.run.elements.type.MObject;
 import com.manywho.sdk.api.run.elements.type.Property;
 import com.manywho.services.swagger.ServiceConfiguration;
-import com.manywho.services.swagger.entities.SwaggerMapper;
-import com.manywho.services.swagger.entities.mapper.Parameter;
+import com.manywho.services.swagger.database.mapper.SwaggerMapper;
+import com.manywho.services.swagger.database.mapper.Parameter;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;

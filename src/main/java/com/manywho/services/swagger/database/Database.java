@@ -1,11 +1,11 @@
-package com.manywho.services.swagger.controllers;
+package com.manywho.services.swagger.database;
 
 import com.manywho.sdk.api.run.elements.type.*;
 import com.manywho.sdk.services.database.RawDatabase;
 import com.manywho.services.swagger.ServiceConfiguration;
-import com.manywho.services.swagger.factories.ManyWhoRelationMapperFactory;
-import com.manywho.services.swagger.managers.DataManager;
-import com.manywho.services.swagger.services.ManyWhoRelationMapperService;
+import com.manywho.services.swagger.database.factory.ManyWhoRelationMapperFactory;
+import com.manywho.services.swagger.database.managers.DataManager;
+import com.manywho.services.swagger.database.services.ManyWhoRelationMapperService;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
