@@ -37,7 +37,7 @@ public class DescribeManager {
         Swagger swagger = swaggerFactory.createSwaggerParser(serviceConfiguration);
 
         for (Map.Entry<String, Path> path : swagger.getPaths().entrySet()) {
-            String pathAction = path.getKey().startsWith("/")? path.getKey().substring(1): path.getKey();
+            String pathAction = path.getKey().startsWith("/") ? path.getKey().substring(1) : path.getKey();
             String developerName = "";
             String summary = "";
             BodyParameter bodyParam = null;
@@ -64,7 +64,7 @@ public class DescribeManager {
             serviceInputs.add(new DescribeValue(refModel.getSimpleRef(), ContentType.Object));
             serviceOutputs.add(new DescribeValue(refProperty.getSimpleRef(), ContentType.Object));
 
-            customActions.add( new DescribeServiceActionResponse(developerName, summary, verbPathAction, serviceInputs,
+            customActions.add(new DescribeServiceActionResponse(developerName, summary, verbPathAction, serviceInputs,
                     serviceOutputs));
         }
 
@@ -74,14 +74,14 @@ public class DescribeManager {
     public List<TypeElement> getListTypeElement(ServiceConfiguration serviceConfiguration) throws Exception {
         List<TypeElement> listOfTypeElements = new ArrayList<>();
 
-        if(Strings.isNullOrEmpty(serviceConfiguration.getSwaggerUrl())) {
+        if (Strings.isNullOrEmpty(serviceConfiguration.getSwaggerUrl())) {
             return listOfTypeElements;
         }
 
         Swagger swagger = swaggerFactory.createSwaggerParser(serviceConfiguration);
-        Map<String,Model> definitions = swagger.getDefinitions();
+        Map<String, Model> definitions = swagger.getDefinitions();
 
-        for(Map.Entry<String, Model> entry : definitions.entrySet()) {
+        for (Map.Entry<String, Model> entry : definitions.entrySet()) {
             listOfTypeElements.add(this.swaggerDefinitionService.createManyWhoMetadataType(entry));
         }
 
@@ -90,11 +90,11 @@ public class DescribeManager {
 
     Map.Entry<String, Model> getEntryDefinition(ServiceConfiguration serviceConfiguration, String type) {
         Swagger swagger = swaggerFactory.createSwaggerParser(serviceConfiguration);
-        Map<String,Model> definitions = swagger.getDefinitions();
+        Map<String, Model> definitions = swagger.getDefinitions();
 
-        for(Map.Entry<String, Model> entry : definitions.entrySet()) {
+        for (Map.Entry<String, Model> entry : definitions.entrySet()) {
             try {
-                if(entry.getKey().equalsIgnoreCase(type)) {
+                if (entry.getKey().equalsIgnoreCase(type)) {
                     return entry;
                 }
             } catch (NotSupportedTypeException e) {
@@ -102,6 +102,6 @@ public class DescribeManager {
             }
         }
 
-        throw new RuntimeException("entry "+ type + "not found");
+        throw new RuntimeException("entry " + type + "not found");
     }
 }

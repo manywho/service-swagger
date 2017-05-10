@@ -14,9 +14,9 @@ public class TypeConverterUtil {
             case "boolean":
                 return ContentType.Boolean;
             case "string":
-                if(Objects.equals(format, "date-time")) {
+                if (Objects.equals(format, "date-time")) {
                     return ContentType.DateTime;
-                } else if(Objects.equals(format, null)) {
+                } else if (Objects.equals(format, null)) {
                     return ContentType.String;
                 }
             default:
@@ -25,7 +25,7 @@ public class TypeConverterUtil {
     }
 
     public static Object getPropertyValue(Property swaggerProperty,
-                                               com.manywho.sdk.api.run.elements.type.Property manywhoProperty) {
+                                          com.manywho.sdk.api.run.elements.type.Property manywhoProperty) {
         switch (swaggerProperty.getType()) {
             case "string":
                 return manywhoProperty.getContentValue();

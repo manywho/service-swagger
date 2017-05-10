@@ -57,7 +57,7 @@ public class DataManager {
 
         if ("GET".equalsIgnoreCase(verb)) {
             HttpGet httpClient = new HttpGet(url);
-            swaggerDefinitionService.getManyWhoType(entry, executeOperation(httpClient),externalIdName);
+            swaggerDefinitionService.getManyWhoType(entry, executeOperation(httpClient), externalIdName);
 
         } else if ("POST".equalsIgnoreCase(verb)) {
             HttpPost httpClient = new HttpPost(url);
@@ -87,14 +87,14 @@ public class DataManager {
 
             executeOperation(httpClient);
 
-        }else {
+        } else {
             throw new RuntimeException("problem creating object");
         }
     }
 
     public Object executeOperation(HttpRequestBase httpClient) {
         CloseableHttpClient httpclient = HttpClients.createDefault();
-        try{
+        try {
             // Create a custom response handler
             ResponseHandler<String> responseHandler = response -> {
                 int status = response.getStatusLine().getStatusCode();
@@ -113,7 +113,7 @@ public class DataManager {
             return mapper.readValue(responseBody, Object.class);
 
         } catch (Exception e) {
-            throw  new RuntimeException(e.getMessage());
+            throw new RuntimeException(e.getMessage());
         } finally {
             try {
                 httpclient.close();

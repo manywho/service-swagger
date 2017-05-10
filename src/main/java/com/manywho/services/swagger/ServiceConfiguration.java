@@ -35,5 +35,7 @@ public class ServiceConfiguration implements Configuration {
         return basicAuthPassword;
     }
 
-    public Boolean getForceHttps() {return forceHttps;}
+    public Boolean getForceHttps() {
+        return forceHttps;
+    }
 }

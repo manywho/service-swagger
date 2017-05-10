@@ -12,6 +12,7 @@ import java.util.List;
 
 public class SwaggerFactory {
     public Swagger createSwaggerParser(ServiceConfiguration configuration) {
+
         if (!StringUtils.isEmpty(configuration.getBasicAuthPassword()) || !StringUtils.isEmpty(configuration.getBasicAuthUserName())) {
             String authString = configuration.getBasicAuthUserName() + ":" + configuration.getBasicAuthPassword();
             byte[] authToken = Base64.encodeBase64(authString.getBytes());
@@ -19,6 +20,7 @@ public class SwaggerFactory {
             AuthorizationValue apiKey = new AuthorizationValue("Authorization", code, "header");
             List<AuthorizationValue> values = Lists.newArrayList();
             values.add(apiKey);
+
             return new SwaggerParser().read(configuration.getSwaggerUrl(), values, false);
         } else {
             return new SwaggerParser().read(configuration.getSwaggerUrl());

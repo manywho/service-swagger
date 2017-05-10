@@ -18,14 +18,14 @@ public class ManyWhoRelationMapperService {
     private List<SwaggerMapper> swaggerMappers;
 
     public ManyWhoRelationMapperService(ServiceConfiguration serviceConfiguration) {
-            swaggerMappers = getSwaggerMapperList(serviceConfiguration.getServiceMapper());
+        swaggerMappers = getSwaggerMapperList(serviceConfiguration.getServiceMapper());
     }
 
     public String getUrlLoad(String entryName, String id) {
         String url = getSwaggerMapper(entryName).getLoad().getUrl();
 
-        for(Parameter parameter: getSwaggerMapper(entryName).getLoad().getParameters()) {
-            if(Objects.equals(parameter.getType(), "query")) {
+        for (Parameter parameter : getSwaggerMapper(entryName).getLoad().getParameters()) {
+            if (Objects.equals(parameter.getType(), "query")) {
                 url = url.replace(String.format("{%s}", parameter.getParamName()), id);
             }
         }
@@ -45,9 +45,9 @@ public class ManyWhoRelationMapperService {
     public String getUrlToUpdate(String entryName, MObject object) {
         String url = getSwaggerMapper(entryName).getUpdate().getUrl();
 
-        for(Parameter parameter: getSwaggerMapper(entryName).getUpdate().getParameters()) {
-            if(Objects.equals(parameter.getType(), "query") && Objects.equals(parameter.getPassedBy(), "object")) {
-                for (Property p: object.getProperties()) {
+        for (Parameter parameter : getSwaggerMapper(entryName).getUpdate().getParameters()) {
+            if (Objects.equals(parameter.getType(), "query") && Objects.equals(parameter.getPassedBy(), "object")) {
+                for (Property p : object.getProperties()) {
                     if (Objects.equals(p.getDeveloperName(), parameter.getName())) {
                         url = url.replace(String.format("{%s}", parameter.getParamName()), p.getContentValue());
                     }
@@ -60,7 +60,7 @@ public class ManyWhoRelationMapperService {
 
     public Boolean isThereManyWhoRelation(String entryName) {
 
-        for (SwaggerMapper swaggerMapper: swaggerMappers) {
+        for (SwaggerMapper swaggerMapper : swaggerMappers) {
             if (entryName.equalsIgnoreCase(swaggerMapper.getManyWhoType())) {
                 return true;
             }
@@ -83,8 +83,8 @@ public class ManyWhoRelationMapperService {
 
     private SwaggerMapper getSwaggerMapper(String entryName) {
 
-        for (SwaggerMapper swaggerMapper: swaggerMappers) {
-            if(StringUtils.equalsIgnoreCase(swaggerMapper.getManyWhoType(), entryName)) {
+        for (SwaggerMapper swaggerMapper : swaggerMappers) {
+            if (StringUtils.equalsIgnoreCase(swaggerMapper.getManyWhoType(), entryName)) {
                 return swaggerMapper;
             }
         }
@@ -98,10 +98,10 @@ public class ManyWhoRelationMapperService {
      * @return
      * @throws IOException
      */
-    private List<SwaggerMapper> getSwaggerMapperList(String jsonString){
+    private List<SwaggerMapper> getSwaggerMapperList(String jsonString) {
         ObjectMapper objectMapper = new ObjectMapper();
 
-        if(Strings.isNullOrEmpty(jsonString)) {
+        if (Strings.isNullOrEmpty(jsonString)) {
             return new ArrayList<>();
         }
 

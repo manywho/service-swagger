@@ -35,12 +35,12 @@ public class Database implements RawDatabase<ServiceConfiguration> {
                     .filter(p -> StringUtils.equals(p.getDeveloperName(), relationService.getExternalIdName(object.getDeveloperName())))
                     .findFirst();
 
-            if(property.isPresent()) {
+            if (property.isPresent()) {
                 return dataManager.find(configuration, object.getDeveloperName(),
                         relationService.getUrlLoadVerb(object.getDeveloperName()),
                         relationService.getUrlLoad(object.getDeveloperName(), property.get().getContentValue()),
                         relationService.getExternalIdName(object.getDeveloperName()));
-            }else {
+            } else {
                 throw new RuntimeException("External Id not found");
             }
         } catch (Exception e) {
@@ -86,12 +86,12 @@ public class Database implements RawDatabase<ServiceConfiguration> {
 
     @Override
     public List<MObject> findAll(ServiceConfiguration configuration, ObjectDataType objectDataType, ListFilter filter) {
-        try{
+        try {
             List<MObject> mObjectList = new ArrayList<>();
 
             return mObjectList;
         } catch (Exception e) {
-            throw  new RuntimeException(e.getMessage());
+            throw new RuntimeException(e.getMessage());
         }
     }
 
@@ -108,12 +108,12 @@ public class Database implements RawDatabase<ServiceConfiguration> {
                     .filter(p -> StringUtils.equals(p.getDeveloperName(), relationService.getExternalIdName(object.getDeveloperName())))
                     .findFirst();
 
-            if(property.isPresent()) {
+            if (property.isPresent()) {
                 return dataManager.find(configuration, object.getDeveloperName(),
                         relationService.getUrlLoadVerb(object.getDeveloperName()),
                         relationService.getUrlLoad(object.getDeveloperName(), property.get().getContentValue()),
                         relationService.getExternalIdName(object.getDeveloperName()));
-            }else {
+            } else {
                 throw new RuntimeException("External Id not found");
             }
         } catch (Exception e) {

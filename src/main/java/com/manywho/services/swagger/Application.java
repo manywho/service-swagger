@@ -3,10 +3,11 @@ package com.manywho.services.swagger;
 import com.manywho.sdk.services.servers.EmbeddedServer;
 import com.manywho.sdk.services.servers.Servlet3Server;
 import com.manywho.sdk.services.servers.undertow.UndertowServer;
+
 import javax.ws.rs.ApplicationPath;
 
 @ApplicationPath("/")
-public class Application extends Servlet3Server  {
+public class Application extends Servlet3Server {
 
     public Application() {
         this.addModule(new ApplicationSwaggerModule());

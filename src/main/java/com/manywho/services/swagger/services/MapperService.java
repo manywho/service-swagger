@@ -18,8 +18,8 @@ public class MapperService {
         EngineValue engineValue = engineValues.get(0);
         HashMap<String, Object> objectHashMap = new HashMap<>();
 
-        for (MObject engineValue1: engineValue.getObjectData()) {
-            for (Property p :engineValue1.getProperties()){
+        for (MObject engineValue1 : engineValue.getObjectData()) {
+            for (Property p : engineValue1.getProperties()) {
                 objectHashMap.put(p.getDeveloperName(), p.getContentValue());
             }
         }
@@ -32,7 +32,7 @@ public class MapperService {
         List<EngineValue> response = Lists.newArrayList();
         List<MObject> objectData = Lists.newArrayList();
         List<Property> properties = Lists.newArrayList();
-        for (Map.Entry<String, Object> entryProp: object.entrySet()) {
+        for (Map.Entry<String, Object> entryProp : object.entrySet()) {
             properties.add(new Property(entryProp.getKey(), entryProp.getValue()));
         }
 
