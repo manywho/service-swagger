@@ -8,6 +8,7 @@ import com.manywho.sdk.api.describe.DescribeValue;
 import com.manywho.sdk.api.draw.elements.type.TypeElement;
 import com.manywho.services.swagger.ServiceConfiguration;
 import com.manywho.services.swagger.exception.NotSupportedTypeException;
+import com.manywho.services.swagger.factories.SwaggerFactory;
 import com.manywho.services.swagger.services.SwaggerDefinitionService;
 import io.swagger.models.Model;
 import io.swagger.models.Path;
@@ -15,7 +16,6 @@ import io.swagger.models.RefModel;
 import io.swagger.models.Swagger;
 import io.swagger.models.parameters.BodyParameter;
 import io.swagger.models.properties.RefProperty;
-import io.swagger.parser.SwaggerParser;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -24,15 +24,18 @@ import java.util.Map;
 
 public class DescribeManager {
     private SwaggerDefinitionService swaggerDefinitionService;
+    private SwaggerFactory swaggerFactory;
 
     @Inject
-    public DescribeManager(SwaggerDefinitionService swaggerDefinitionService) {
+    public DescribeManager(SwaggerDefinitionService swaggerDefinitionService, SwaggerFactory swaggerFactory) {
         this.swaggerDefinitionService = swaggerDefinitionService;
+        this.swaggerFactory = swaggerFactory;
     }
 
     public List<DescribeServiceActionResponse> getListActions(ServiceConfiguration serviceConfiguration) {
         List<DescribeServiceActionResponse> customActions = Lists.newArrayList();
-        Swagger swagger = new SwaggerParser().read(serviceConfiguration.getSwaggerUrl());
+        Swagger swagger = swaggerFactory.createSwaggerParser(serviceConfiguration);
+
         for (Map.Entry<String, Path> path : swagger.getPaths().entrySet()) {
             String pathAction = path.getKey().startsWith("/")? path.getKey().substring(1): path.getKey();
             String developerName = "";
@@ -75,7 +78,7 @@ public class DescribeManager {
             return listOfTypeElements;
         }
 
-        Swagger swagger = new SwaggerParser().read(serviceConfiguration.getSwaggerUrl());
+        Swagger swagger = swaggerFactory.createSwaggerParser(serviceConfiguration);
         Map<String,Model> definitions = swagger.getDefinitions();
 
         for(Map.Entry<String, Model> entry : definitions.entrySet()) {
@@ -86,7 +89,7 @@ public class DescribeManager {
     }
 
     Map.Entry<String, Model> getEntryDefinition(ServiceConfiguration serviceConfiguration, String type) {
-        Swagger swagger = new SwaggerParser().read(serviceConfiguration.getSwaggerUrl());
+        Swagger swagger = swaggerFactory.createSwaggerParser(serviceConfiguration);
         Map<String,Model> definitions = swagger.getDefinitions();
 
         for(Map.Entry<String, Model> entry : definitions.entrySet()) {
@@ -101,7 +104,4 @@ public class DescribeManager {
 
         throw new RuntimeException("entry "+ type + "not found");
     }
-
-
-
 }
