@@ -73,8 +73,7 @@ public class RawActionHandler implements ActionHandler<ServiceConfiguration> {
         }
         HashMap<String, Object> object = null;
 
-        String uri = swagger.getSchemes().get(0).toValue() + "://" + swagger.getHost()
-                + swagger.getBasePath() + getPathWithoutVerb(actionPath);
+        String uri = getBaseUrlForActions(swagger, configuration) + getPathWithoutVerb(actionPath);
 
         String responseObjectName;
 
@@ -99,6 +98,19 @@ public class RawActionHandler implements ActionHandler<ServiceConfiguration> {
         List<EngineValue> outputs = mapperService.objectToEngineValues(object, responseObjectName);
 
         return new ServiceResponse(InvokeType.Forward, outputs, serviceRequest.getToken());
+    }
+
+    private String getBaseUrlForActions(Swagger swagger, ServiceConfiguration configuration) {
+        //it force https if the option is selected in other case if there is only one choice select that choice.
+        String scheme = "http";
+
+        if (configuration.getForceHttps()) {
+            scheme = "https";
+        } else if (swagger.getSchemes().size() == 1) {
+            scheme = swagger.getSchemes().get(0).toValue();
+        }
+
+        return scheme + "://" + swagger.getHost() + swagger.getBasePath();
     }
 
     private Path getPath(Swagger swagger, String uri) {

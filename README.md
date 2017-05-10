@@ -9,12 +9,16 @@ This service allows you to connect ManyWho with an API with swagger description.
 
 ### Actions
 
-Actions are supported for not nested types.
+Actions are supported for not nested types, and only for one type for input, and one type for output.
+
 E.g. type user
 {
     "username": "jose",
     "id": "12345"
 }
+
+The choice forse HTTPS forse to make the calls using https. If this is not selected it will use scheme in the 
+swagger definition, or if there isn't any it will use http.
 
 ### Save, Load and Create
 

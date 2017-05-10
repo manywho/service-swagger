@@ -4,17 +4,20 @@ import com.manywho.sdk.api.ContentType;
 import com.manywho.sdk.services.configuration.Configuration;
 
 public class ServiceConfiguration implements Configuration {
-    @Configuration.Setting(name="Swagger Description Url", contentType= ContentType.String)
+    @Configuration.Setting(name = "Swagger Description Url", contentType = ContentType.String)
     private String swaggerUrl;
 
-    @Configuration.Setting(name="Swagger ManyWho Mapper", contentType= ContentType.String)
+    @Configuration.Setting(name = "Swagger ManyWho Mapper", contentType = ContentType.String)
     private String serviceMapper;
 
-    @Configuration.Setting(name="Basic Auth UserName", contentType = ContentType.String)
+    @Configuration.Setting(name = "Basic Auth UserName", contentType = ContentType.String)
     private String basicAuthUserName;
 
-    @Configuration.Setting(name="Basic Auth Password", contentType = ContentType.Password)
+    @Configuration.Setting(name = "Basic Auth Password", contentType = ContentType.Password)
     private String basicAuthPassword;
+
+    @Configuration.Setting(name = "Force HTTPS", contentType = ContentType.Boolean)
+    private Boolean forceHttps;
 
     public String getSwaggerUrl() {
         return swaggerUrl;
@@ -31,4 +34,6 @@ public class ServiceConfiguration implements Configuration {
     public String getBasicAuthPassword() {
         return basicAuthPassword;
     }
+
+    public Boolean getForceHttps() {return forceHttps;}
 }
