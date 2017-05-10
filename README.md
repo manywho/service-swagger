@@ -3,9 +3,20 @@ ManyWho Swagger Service
 
 This service allows you to connect ManyWho with an API with swagger description.
 
-**This service is under development.**
+**This service is currently in development, and not yet recommended for use in production environments.**
 
 ## Configuration
+
+### Actions
+
+Actions are supported for not nested types.
+E.g. type user
+{
+    "username": "jose",
+    "id": "12345"
+}
+
+### Save, Load and Create
 
 You will need to provide two configuration value, and we will Explain these values using the example [swagger petstore project](http://petstore.swagger.io)
 
