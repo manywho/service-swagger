@@ -1,0 +1,126 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "Simple Clock API",
+    "contact": {
+      "url": "http://"
+    }
+  },
+  "host": "atom-local.ngrok.io:80",
+  "basePath": "/ws/rest/simple-clock",
+  "schemes": [
+    "http"
+  ],
+  "paths": {
+    "/current-time": {
+      "post": {
+        "summary": "Current Time",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "Input JSON",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/TimeOptions"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Content-Type",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "$ref": "#/definitions/TimeObject"
+            }
+          },
+          "400": {
+            "$ref": "#/responses/400"
+          },
+          "401": {
+            "$ref": "#/responses/401"
+          },
+          "404": {
+            "$ref": "#/responses/404"
+          },
+          "405": {
+            "$ref": "#/responses/405"
+          },
+          "413": {
+            "$ref": "#/responses/413"
+          },
+          "500": {
+            "$ref": "#/responses/500"
+          },
+          "503": {
+            "$ref": "#/responses/503"
+          },
+          "522": {
+            "$ref": "#/responses/522"
+          },
+          "default": {
+            "$ref": "#/responses/default"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "TimeObject": {
+      "type": "object",
+      "properties": {
+        "Current Time": {
+          "type": "string"
+        }
+      }
+    },
+    "TimeOptions": {
+      "type": "object",
+      "properties": {
+        "Time Zone": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "responses": {
+    "400": {
+      "description": "Bad Request - There are miscellaneous errors with the request, for example, mismatches between the request and what is allowed for the operation."
+    },
+    "401": {
+      "description": "Unauthorized or 403 Forbidden - Authentication errors."
+    },
+    "404": {
+      "description": "Not Found - Invalid URL path."
+    },
+    "405": {
+      "description": "Method Not Allowed - The caller attempted to send input data to a process that cannot receive input data."
+    },
+    "413": {
+      "description": "Request Entity Too Large - The request data was too large. This is based on the SOA Input Size quota."
+    },
+    "500": {
+      "description": "Internal Server Error - This generic error message appears when an unexpected condition was encountered and a more specific message is not suitable."
+    },
+    "503": {
+      "description": "Service Unavailable - The caller has hit a throttle or the request was rejected because the Atom is starting or stopping."
+    },
+    "522": {
+      "description": "Connection Timed Out - This message is returned to the client when the SOA Worker Maximum Execution Time has been exceeded."
+    },
+    "default": {
+      "description": "Unidentified Exception"
+    }
+  }
+}
