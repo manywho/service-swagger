@@ -33,33 +33,30 @@ public class DescribeManagerTest {
         DescribeManager describeManager = new DescribeManager(swaggerDefinitionService, swaggerFactory);
         List<DescribeServiceActionResponse> responseList = describeManager.getListActions(new ServiceConfiguration());
         assertEquals(1, responseList.size());
-        DescribeServiceActionResponse firstAction = responseList.get(0);
 
-        assertEquals("POST Current Time", firstAction.getDeveloperName());
-        assertEquals("Current Time", firstAction.getDeveloperSummary());
-        assertEquals(0, firstAction.getServiceActionOutcomes().size());
-        assertEquals("post/current-time", firstAction.getUriPart());
+        assertEquals("POST Current Time", responseList.get(0).getDeveloperName());
+        assertEquals("Current Time", responseList.get(0).getDeveloperSummary());
+        assertEquals(0, responseList.get(0).getServiceActionOutcomes().size());
+        assertEquals("post/current-time", responseList.get(0).getUriPart());
 
-        List<DescribeValue> inputs = firstAction.getServiceInputs();
-        assertEquals(1, inputs.size());
-        DescribeValue firstInput = inputs.get(0);
-        assertEquals("TimeOptions", firstInput.getDeveloperName());
-        assertEquals(null, firstInput.getContentValue());
-        assertEquals(false, firstInput.isRequired());
-        assertEquals("ContentObject", firstInput.getContentType().toString());
-        assertEquals("Object", firstInput.getContentType().name());
-        assertEquals(null, firstInput.getTypeElementDeveloperName());
-        assertEquals(0, firstInput.getOrdinal());
+        assertEquals(1, responseList.get(0).getServiceInputs().size());
+        DescribeValue firstInput = responseList.get(0).getServiceInputs().get(0);
+        assertEquals("TimeOptions", responseList.get(0).getServiceInputs().get(0).getDeveloperName());
+        assertEquals(null, responseList.get(0).getServiceInputs().get(0).getContentValue());
+        assertEquals(false, responseList.get(0).getServiceInputs().get(0).isRequired());
+        assertEquals("ContentObject", responseList.get(0).getServiceInputs().get(0).getContentType().toString());
+        assertEquals("Object", responseList.get(0).getServiceInputs().get(0).getContentType().name());
+        assertEquals(null, responseList.get(0).getServiceInputs().get(0).getTypeElementDeveloperName());
+        assertEquals(0, responseList.get(0).getServiceInputs().get(0).getOrdinal());
 
-        List<DescribeValue> outputs = firstAction.getServiceOutputs();
-        assertEquals(1, outputs.size());
-        DescribeValue firstOutput = outputs.get(0);
-        assertEquals("TimeObject", firstOutput.getDeveloperName());
-        assertEquals(null, firstOutput.getContentValue());
-        assertEquals("ContentObject", firstOutput.getContentType().toString());
-        assertEquals("Object", firstOutput.getContentType().name());
-        assertEquals(null, firstOutput.getTypeElementDeveloperName());
-        assertEquals(0, firstOutput.getOrdinal());
+        assertEquals(1, responseList.get(0).getServiceOutputs().size());
+        DescribeValue firstOutput = responseList.get(0).getServiceOutputs().get(0);
+        assertEquals("TimeObject", responseList.get(0).getServiceOutputs().get(0).getDeveloperName());
+        assertEquals(null, responseList.get(0).getServiceOutputs().get(0).getContentValue());
+        assertEquals("ContentObject", responseList.get(0).getServiceOutputs().get(0).getContentType().toString());
+        assertEquals("Object", responseList.get(0).getServiceOutputs().get(0).getContentType().name());
+        assertEquals(null, responseList.get(0).getServiceOutputs().get(0).getTypeElementDeveloperName());
+        assertEquals(0, responseList.get(0).getServiceOutputs().get(0).getOrdinal());
     }
 
     @Test
