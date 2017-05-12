@@ -3,7 +3,6 @@ package com.manywho.services.swagger.database;
 import com.manywho.sdk.api.run.elements.type.*;
 import com.manywho.sdk.services.database.RawDatabase;
 import com.manywho.services.swagger.ServiceConfiguration;
-import com.manywho.services.swagger.database.factory.ManyWhoRelationMapperFactory;
 import com.manywho.services.swagger.database.managers.DataManager;
 import com.manywho.services.swagger.database.services.ManyWhoRelationMapperService;
 import org.apache.commons.lang3.StringUtils;
@@ -15,18 +14,16 @@ import java.util.Optional;
 
 public class Database implements RawDatabase<ServiceConfiguration> {
     private DataManager dataManager;
-    private ManyWhoRelationMapperFactory manyWhoRelationServiceFactory;
 
     @Inject
-    public Database(DataManager dataManager, ManyWhoRelationMapperFactory manyWhoRelationServiceFactory) {
+    public Database(DataManager dataManager) {
         this.dataManager = dataManager;
-        this.manyWhoRelationServiceFactory = manyWhoRelationServiceFactory;
     }
 
     @Override
     public MObject create(ServiceConfiguration configuration, MObject object) {
         try {
-            ManyWhoRelationMapperService relationService = manyWhoRelationServiceFactory.createManyWhoRelationMapper(configuration);
+            ManyWhoRelationMapperService relationService = new ManyWhoRelationMapperService(configuration);
 
             dataManager.save(configuration, object, relationService.getUrlCreateVerb(object.getDeveloperName()),
                     relationService.getUrlToCreate(object.getDeveloperName()), relationService.getExternalIdName(object.getDeveloperName()));
@@ -69,7 +66,7 @@ public class Database implements RawDatabase<ServiceConfiguration> {
 
     @Override
     public MObject find(ServiceConfiguration configuration, ObjectDataType objectDataType, String id) {
-        ManyWhoRelationMapperService relationService = manyWhoRelationServiceFactory.createManyWhoRelationMapper(configuration);
+        ManyWhoRelationMapperService relationService = new ManyWhoRelationMapperService(configuration);
         Optional<ObjectDataTypeProperty> property = objectDataType.getProperties().stream()
                 .filter(p -> StringUtils.equalsIgnoreCase(p.getDeveloperName(), relationService.getExternalIdName(objectDataType.getDeveloperName())))
                 .findFirst();
@@ -98,7 +95,7 @@ public class Database implements RawDatabase<ServiceConfiguration> {
     @Override
     public MObject update(ServiceConfiguration configuration, MObject object) {
         try {
-            ManyWhoRelationMapperService relationService = manyWhoRelationServiceFactory.createManyWhoRelationMapper(configuration);
+            ManyWhoRelationMapperService relationService = new ManyWhoRelationMapperService(configuration);
 
             dataManager.save(configuration, object, relationService.getUrlUpdateVerb(object.getDeveloperName()),
                     relationService.getUrlToUpdate(object.getDeveloperName(), object),

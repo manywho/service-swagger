@@ -6,10 +6,7 @@ import com.manywho.services.swagger.client.HttpClientSwagger;
 import com.manywho.services.swagger.description.SwaggerDefinitionService;
 import com.manywho.services.swagger.description.manager.DescribeManager;
 import io.swagger.models.Model;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.client.methods.*;
 import org.apache.http.entity.StringEntity;
 
 import javax.inject.Inject;
@@ -22,13 +19,11 @@ public class DataManager {
 
     @Inject
     public DataManager(DescribeManager describeManager, SwaggerDefinitionService swaggerDefinitionService) {
-
         this.describeManager = describeManager;
         this.swaggerDefinitionService = swaggerDefinitionService;
     }
 
-    public MObject find(ServiceConfiguration configuration, String entryName, String verb, String url,
-                        String externalIdName) {
+    public MObject find(ServiceConfiguration configuration, String entryName, String verb, String url, String externalIdName) {
 
         Map.Entry<String, Model> entry = describeManager.getEntryDefinition(configuration, entryName);
         HttpRequestBase httpClient = null;
@@ -42,8 +37,7 @@ public class DataManager {
         return swaggerDefinitionService.getManyWhoType(entry, httpClientSwagger.executeOperationObject(httpClient), externalIdName);
     }
 
-    public void save(ServiceConfiguration configuration, MObject object, String verb, String url,
-                     String externalIdName) {
+    public void save(ServiceConfiguration configuration, MObject object, String verb, String url, String externalIdName) {
         HttpClientSwagger httpClientSwagger = new HttpClientSwagger(configuration);
         Map.Entry<String, Model> entry = describeManager.getEntryDefinition(configuration, object.getDeveloperName());
 
@@ -53,34 +47,26 @@ public class DataManager {
 
         } else if ("POST".equalsIgnoreCase(verb)) {
             HttpPost httpClient = new HttpPost(url);
-            StringEntity input = null;
-
-            try {
-                input = new StringEntity(swaggerDefinitionService.getEntryString(object, entry));
-            } catch (UnsupportedEncodingException e) {
-                throw new RuntimeException(e);
-            }
-            input.setContentType("application/json");
-            httpClient.setEntity(input);
-
-            httpClientSwagger.executeOperationObject(httpClient);
+            executeOperation(object, httpClientSwagger, entry, httpClient);
 
         } else if ("PUT".equalsIgnoreCase(verb)) {
             HttpPut httpClient = new HttpPut(url);
-            StringEntity input = null;
+            executeOperation(object, httpClientSwagger, entry, httpClient);
 
-            try {
-                input = new StringEntity(swaggerDefinitionService.getEntryString(object, entry));
-            } catch (UnsupportedEncodingException e) {
-                throw new RuntimeException(e);
-            }
+        } else {
+            throw new RuntimeException("problem creating object");
+        }
+    }
+
+    private void executeOperation(MObject object, HttpClientSwagger httpClientSwagger, Map.Entry<String, Model> entry, HttpEntityEnclosingRequestBase httpClient) {
+        try {
+            StringEntity input = new StringEntity(swaggerDefinitionService.getEntryString(object, entry));
             input.setContentType("application/json");
             httpClient.setEntity(input);
 
             httpClientSwagger.executeOperationObject(httpClient);
-
-        } else {
-            throw new RuntimeException("problem creating object");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
         }
     }
 }

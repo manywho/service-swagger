@@ -60,13 +60,13 @@ public class RawActionHandler implements ActionHandler<ServiceConfiguration> {
         } catch (JsonProcessingException | UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
-        HashMap<String, Object> object = null;
+        HashMap<String, Object> object;
 
         String uri = getBaseUrlForActions(swagger, configuration) + getPathWithoutVerb(actionPath);
 
         String responseObjectName;
 
-        if (getVerb(actionPath).equals("post")) {
+        if (getVerb(actionPath).equalsIgnoreCase("post")) {
             HttpPost httppost = new HttpPost(uri);
 
             entity.setContentType("application/json");
@@ -74,7 +74,7 @@ public class RawActionHandler implements ActionHandler<ServiceConfiguration> {
             object = httpClientSwagger.executeOperationHashMap(httppost);
             responseObjectName = ((RefProperty) path.getPost().getResponses().get("200").getSchema()).getSimpleRef();
 
-        } else if (getVerb(actionPath).equals("get")) {
+        } else if (getVerb(actionPath).equalsIgnoreCase("get")) {
             HttpGet httpGet = new HttpGet(uri);
             entity.setContentType("application/json");
             object = httpClientSwagger.executeOperationHashMap(httpGet);
@@ -108,8 +108,8 @@ public class RawActionHandler implements ActionHandler<ServiceConfiguration> {
 
         for (Map.Entry<String, Path> path : swagger.getPaths().entrySet()) {
             if (pathNoVerb.equals(path.getKey())) {
-                if ((verb.equals("post") && path.getValue().getPost() != null)
-                        || verb.equals("get") && path.getValue().getGet() != null) {
+                if ((verb.equalsIgnoreCase("post") && path.getValue().getPost() != null)
+                        || verb.equalsIgnoreCase("get") && path.getValue().getGet() != null) {
 
                     return path.getValue();
                 }
@@ -120,9 +120,11 @@ public class RawActionHandler implements ActionHandler<ServiceConfiguration> {
     }
 
     private String getVerb(String uri) {
-        if (uri.substring(0, 3).equals("get")) {
+        if (uri.substring(0, 3).equalsIgnoreCase("get")) {
+
             return "get";
-        } else if (uri.substring(0, 4).equals("post")) {
+        } else if (uri.substring(0, 4).equalsIgnoreCase("post")) {
+
             return "post";
         } else {
             throw new RuntimeException(String.format("Verb in uri {%s} not supported", uri));
@@ -131,7 +133,7 @@ public class RawActionHandler implements ActionHandler<ServiceConfiguration> {
 
     private String getPathWithoutVerb(String uri) {
         String verb = getVerb(uri);
-        if (verb.equals("post")) {
+        if (verb.equalsIgnoreCase("post")) {
             return uri.substring(4);
         } else if (verb.equals("get")) {
             return uri.substring(3);

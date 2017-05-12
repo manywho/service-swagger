@@ -71,41 +71,6 @@ public class DescribeManager {
         return customActions;
     }
 
-    private List<DescribeValue> getOutputs(Swagger swagger, Operation operation) {
-        RefProperty refProperty = (RefProperty) operation.getResponses().get("200").getSchema();
-        Map<String, Model> definitions = swagger.getDefinitions();
-
-        List<DescribeValue> serviceOutputs = Lists.newArrayList();
-        serviceOutputs.add(new DescribeValue(refProperty.getSimpleRef(), ContentType.Object));
-
-
-        Map.Entry<String, Model> entry = new AbstractMap.SimpleEntry<>(refProperty.getSimpleRef(), definitions.get(refProperty.getSimpleRef()));
-
-        //validate properties
-        for (Map.Entry<String, Property> propertyEntry : entry.getValue().getProperties().entrySet()) {
-            TypeConverterUtil.convertFromSwaggerToManyWho(propertyEntry.getValue().getType(), propertyEntry.getValue().getFormat());
-        }
-
-        return serviceOutputs;
-    }
-
-
-    private List<DescribeValue> getInputs(Swagger swagger, Operation operation) {
-        Map<String, Model> definitions = swagger.getDefinitions();
-        BodyParameter bodyParam = (BodyParameter) operation.getParameters().get(0);
-        RefModel refModel = (RefModel) bodyParam.getSchema();
-        List<DescribeValue> describeValues = Lists.newArrayList();
-        describeValues.add(new DescribeValue(refModel.getSimpleRef(), ContentType.Object));
-        Map.Entry<String, Model> entry = new AbstractMap.SimpleEntry<>(refModel.getSimpleRef(), definitions.get(refModel.getSimpleRef()));
-
-        //validate properties
-        for (Map.Entry<String, Property> propertyEntry : entry.getValue().getProperties().entrySet()) {
-            TypeConverterUtil.convertFromSwaggerToManyWho(propertyEntry.getValue().getType(), propertyEntry.getValue().getFormat());
-        }
-
-        return describeValues;
-    }
-
     public List<TypeElement> getListTypeElement(ServiceConfiguration serviceConfiguration) {
         List<TypeElement> listOfTypeElements = new ArrayList<>();
 
@@ -142,5 +107,41 @@ public class DescribeManager {
         }
 
         throw new RuntimeException("entry " + type + "not found");
+    }
+
+
+    private List<DescribeValue> getOutputs(Swagger swagger, Operation operation) {
+        RefProperty refProperty = (RefProperty) operation.getResponses().get("200").getSchema();
+        Map<String, Model> definitions = swagger.getDefinitions();
+
+        List<DescribeValue> serviceOutputs = Lists.newArrayList();
+        serviceOutputs.add(new DescribeValue(refProperty.getSimpleRef(), ContentType.Object));
+
+
+        Map.Entry<String, Model> entry = new AbstractMap.SimpleEntry<>(refProperty.getSimpleRef(), definitions.get(refProperty.getSimpleRef()));
+
+        //validate properties
+        for (Map.Entry<String, Property> propertyEntry : entry.getValue().getProperties().entrySet()) {
+            TypeConverterUtil.convertFromSwaggerToManyWho(propertyEntry.getValue().getType(), propertyEntry.getValue().getFormat());
+        }
+
+        return serviceOutputs;
+    }
+
+
+    private List<DescribeValue> getInputs(Swagger swagger, Operation operation) {
+        Map<String, Model> definitions = swagger.getDefinitions();
+        BodyParameter bodyParam = (BodyParameter) operation.getParameters().get(0);
+        RefModel refModel = (RefModel) bodyParam.getSchema();
+        List<DescribeValue> describeValues = Lists.newArrayList();
+        describeValues.add(new DescribeValue(refModel.getSimpleRef(), ContentType.Object));
+        Map.Entry<String, Model> entry = new AbstractMap.SimpleEntry<>(refModel.getSimpleRef(), definitions.get(refModel.getSimpleRef()));
+
+        //validate properties
+        for (Map.Entry<String, Property> propertyEntry : entry.getValue().getProperties().entrySet()) {
+            TypeConverterUtil.convertFromSwaggerToManyWho(propertyEntry.getValue().getType(), propertyEntry.getValue().getFormat());
+        }
+
+        return describeValues;
     }
 }
