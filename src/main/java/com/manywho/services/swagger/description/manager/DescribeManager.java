@@ -54,7 +54,14 @@ public class DescribeManager {
 
             if (operation != null) {
                 try {
-                    customActions.add(createServiceActionResponse(swagger, path.getKey(), developerName, verbPathAction, operation));
+                    DescribeServiceActionResponse describeServiceActionResponse = new DescribeServiceActionResponse(
+                            developerName,
+                            operation.getSummary(),
+                            verbPathAction,
+                            getInputs(swagger, operation),
+                            getOutputs(swagger, operation));
+
+                    customActions.add(describeServiceActionResponse);
                 } catch (NotSupportedTypeException ex) {
                     // ignored not supported actions
                 }
@@ -64,16 +71,24 @@ public class DescribeManager {
         return customActions;
     }
 
-    private DescribeServiceActionResponse createServiceActionResponse(Swagger swagger, String path, String developerName, String verbPathAction, Operation operation) {
-        RefProperty refProperty = (RefProperty) swagger.getPaths().get(path).getPost()
-                .getResponses().get("200").getSchema();
+    private List<DescribeValue> getOutputs(Swagger swagger, Operation operation) {
+        RefProperty refProperty = (RefProperty) operation.getResponses().get("200").getSchema();
+        Map<String, Model> definitions = swagger.getDefinitions();
 
         List<DescribeValue> serviceOutputs = Lists.newArrayList();
         serviceOutputs.add(new DescribeValue(refProperty.getSimpleRef(), ContentType.Object));
-        String summary = operation.getSummary();
 
-        return new DescribeServiceActionResponse(developerName, summary, verbPathAction, getInputs(swagger, operation), serviceOutputs);
+
+        Map.Entry<String, Model> entry = new AbstractMap.SimpleEntry<>(refProperty.getSimpleRef(), definitions.get(refProperty.getSimpleRef()));
+
+        //validate properties
+        for (Map.Entry<String, Property> propertyEntry : entry.getValue().getProperties().entrySet()) {
+            TypeConverterUtil.convertFromSwaggerToManyWho(propertyEntry.getValue().getType(), propertyEntry.getValue().getFormat());
+        }
+
+        return serviceOutputs;
     }
+
 
     private List<DescribeValue> getInputs(Swagger swagger, Operation operation) {
         Map<String, Model> definitions = swagger.getDefinitions();

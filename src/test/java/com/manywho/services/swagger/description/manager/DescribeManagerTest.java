@@ -96,7 +96,7 @@ public class DescribeManagerTest {
     }
 
     @Test
-    public void testDescribeIgnoreActionWithNestedType() throws Exception {
+    public void testIgnoreActionWithNestedInputType() throws Exception {
         // the type is ignored if there are nested fields in it
         DescribeManager describeManager = getDescribeManager("description/manager/swagger-with-nested-input.json");
         ServiceConfiguration serviceConfiguration = mock(ServiceConfiguration.class);
@@ -111,7 +111,22 @@ public class DescribeManagerTest {
     }
 
     @Test
-    public void testDescribeIgnoreTypesWithNestedType() throws Exception {
+    public void testIgnoreActionWithNestedOutputType() throws Exception {
+        // the type is ignored if there are nested fields in it
+        DescribeManager describeManager = getDescribeManager("description/manager/swagger-with-nested-outputs.json");
+        ServiceConfiguration serviceConfiguration = mock(ServiceConfiguration.class);
+        when(serviceConfiguration.getSwaggerUrl()).thenReturn("http://not-empty.com");
+        List<DescribeServiceActionResponse> responseActionList = describeManager.getListActions(serviceConfiguration);
+        assertEquals(1, responseActionList.size());
+
+        Optional<DescribeServiceActionResponse> actionWithNestedType = responseActionList.stream()
+                .filter(action -> action.getUriPart().equals("/current-time-nested")).findFirst();
+
+        assertFalse(actionWithNestedType.isPresent());
+    }
+
+    @Test
+    public void testIgnoreTypesWithNestedType() throws Exception {
         // the type is ignored if there are nested fields in it
         DescribeManager describeManager = getDescribeManager("description/manager/swagger-with-nested-input.json");
         ServiceConfiguration serviceConfiguration = mock(ServiceConfiguration.class);
