@@ -9,22 +9,55 @@ This service allows you to connect ManyWho with an API with swagger description.
 
  - **Swagger Description Url**
 
-This is the url of your api description, in our case is http://petstore.swagger.io/v2/swagger.json
+This is the url of your api description, (e.g. http://petstore.swagger.io/v2/swagger.json)
 
 ### Actions
 
 Actions are supported for not nested types, and only for one type/object for input, and one type/object for output.
 
-E.g. type user
-{
-    "username": "jose",
-    "id": "12345"
+E.g. valid type user
+````
+"UserObject": {
+    "type": "object",
+    "properties": {
+        "UserName": {
+            "type": "string"
+        },
+        "Role" {
+            "type": "string"
+        }
+    }
+````
+
+E.g not valid type user
+
+````
+"UserObject": {
+    "type": "object",
+    "properties": {
+        "UserName": {
+            "type": "string"
+        },
+        "Role": {
+            "type": "object",
+            "properties": {
+                "RoleName": {
+                    "type": "string"
+                }
+            }
+        }
+    }
 }
+````
 
-The external ID will be a random UUID.
+The not valid types and action with a not valid types as input or input will be ignored by the service. 
 
-The choice forse HTTPS forse to make the calls using https. If this is not selected it will use scheme in the
-swagger definition, or if there isn't any it will use http.
+The external ID is a UUID and is generated randomly.
+
+The choice force HTTPS force to make the calls using https. If this is not selected it will use scheme in the
+swagger definition, or if there isn't any it will use http. 
+
+(e.g. the value have to be true when you are using Boomi exposing an API under https)
 
 ### Save, Load and Create
 
@@ -32,7 +65,7 @@ We will explain these values using the example [swagger petstore project](http:/
 
  - **Swagger ManyWho Mapper**
 
-We define here how ManyWho is going to load, crate and update the Types (we will just deffine "User") using the petstore API.
+We define here how ManyWho is going to load, crate and update the Types (we will just define "User") using the petstore API.
 
 ````
 [{

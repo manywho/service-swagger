@@ -2,35 +2,31 @@ package com.manywho.services.swagger.description.manager;
 
 import com.google.common.io.Resources;
 import com.manywho.sdk.api.describe.DescribeServiceActionResponse;
-import com.manywho.sdk.api.describe.DescribeValue;
 import com.manywho.sdk.api.draw.elements.type.TypeElement;
 import com.manywho.services.swagger.ServiceConfiguration;
 import com.manywho.services.swagger.description.SwaggerDefinitionService;
 import com.manywho.services.swagger.factories.SwaggerParserFactory;
+import io.swagger.models.Swagger;
 import io.swagger.parser.SwaggerParser;
 import org.junit.Test;
 
 import java.io.File;
 import java.net.URISyntaxException;
 
-import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 
 public class DescribeManagerTest {
-
     @Test
     public void testDescribeActionsFromSwaggerDefinition() throws URISyntaxException {
-        SwaggerDefinitionService swaggerDefinitionService = mock(SwaggerDefinitionService.class);
-        SwaggerParserFactory swaggerFactory = mock(SwaggerParserFactory.class);
-        String content = getFileContent("description/manager/swagger.json");
-        when(swaggerFactory.createSwaggerParser(any())).thenReturn(new SwaggerParser().parse(content));
+        DescribeManager describeManager = getDescribeManager("description/manager/swagger.json");
 
-        DescribeManager describeManager = new DescribeManager(swaggerDefinitionService, swaggerFactory);
         List<DescribeServiceActionResponse> responseList = describeManager.getListActions(new ServiceConfiguration());
         assertEquals(1, responseList.size());
 
@@ -40,7 +36,6 @@ public class DescribeManagerTest {
         assertEquals("post/current-time", responseList.get(0).getUriPart());
 
         assertEquals(1, responseList.get(0).getServiceInputs().size());
-        DescribeValue firstInput = responseList.get(0).getServiceInputs().get(0);
         assertEquals("TimeOptions", responseList.get(0).getServiceInputs().get(0).getDeveloperName());
         assertEquals(null, responseList.get(0).getServiceInputs().get(0).getContentValue());
         assertEquals(false, responseList.get(0).getServiceInputs().get(0).isRequired());
@@ -50,7 +45,6 @@ public class DescribeManagerTest {
         assertEquals(0, responseList.get(0).getServiceInputs().get(0).getOrdinal());
 
         assertEquals(1, responseList.get(0).getServiceOutputs().size());
-        DescribeValue firstOutput = responseList.get(0).getServiceOutputs().get(0);
         assertEquals("TimeObject", responseList.get(0).getServiceOutputs().get(0).getDeveloperName());
         assertEquals(null, responseList.get(0).getServiceOutputs().get(0).getContentValue());
         assertEquals("ContentObject", responseList.get(0).getServiceOutputs().get(0).getContentType().toString());
@@ -61,14 +55,9 @@ public class DescribeManagerTest {
 
     @Test
     public void testDescribeTypesFromSwaggerDefinition() throws Exception {
-        SwaggerDefinitionService swaggerDefinitionService = new SwaggerDefinitionService();
-        SwaggerParserFactory swaggerFactory = mock(SwaggerParserFactory.class);
         ServiceConfiguration serviceConfiguration = mock(ServiceConfiguration.class);
-        when(serviceConfiguration.getSwaggerUrl()).thenReturn("https://wwww.test.com");
-        String content = getFileContent("description/manager/swagger.json");
-        when(swaggerFactory.createSwaggerParser(any())).thenReturn(new SwaggerParser().parse(content));
-
-        DescribeManager describeManager = new DescribeManager(swaggerDefinitionService, swaggerFactory);
+        when(serviceConfiguration.getSwaggerUrl()).thenReturn("http://not-empty.com");
+        DescribeManager describeManager = getDescribeManager("description/manager/swagger.json");
         List<TypeElement> responseList = describeManager.getListTypeElement(serviceConfiguration);
 
         assertEquals(2, responseList.size());
@@ -104,6 +93,47 @@ public class DescribeManagerTest {
         assertEquals("TYPE", responseList.get(0).getElementType());
         assertEquals("TimeObject", responseList.get(0).getDeveloperName());
         assertEquals(null, responseList.get(0).getDeveloperSummary());
+    }
+
+    @Test
+    public void testDescribeIgnoreActionWithNestedType() throws Exception {
+        // the type is ignored if there are nested fields in it
+        DescribeManager describeManager = getDescribeManager("description/manager/swagger-with-nested-input.json");
+        ServiceConfiguration serviceConfiguration = mock(ServiceConfiguration.class);
+        when(serviceConfiguration.getSwaggerUrl()).thenReturn("http://not-empty.com");
+        List<DescribeServiceActionResponse> responseActionList = describeManager.getListActions(serviceConfiguration);
+        assertEquals(1, responseActionList.size());
+
+        Optional<DescribeServiceActionResponse> actionWithNestedType = responseActionList.stream()
+                .filter(action -> action.getUriPart().equals("/current-time-nested")).findFirst();
+
+        assertFalse(actionWithNestedType.isPresent());
+    }
+
+    @Test
+    public void testDescribeIgnoreTypesWithNestedType() throws Exception {
+        // the type is ignored if there are nested fields in it
+        DescribeManager describeManager = getDescribeManager("description/manager/swagger-with-nested-input.json");
+        ServiceConfiguration serviceConfiguration = mock(ServiceConfiguration.class);
+        when(serviceConfiguration.getSwaggerUrl()).thenReturn("http://not-empty.com");
+
+        List<TypeElement> responseTypeList = describeManager.getListTypeElement(serviceConfiguration);
+        //it should ignore the type Current Time Nested
+        assertEquals(2, responseTypeList.size());
+
+        Optional<TypeElement> typeElementNested = responseTypeList.stream().filter(type -> type.getDeveloperName()
+                .equals("TimeOptions nested")).findFirst();
+
+        assertFalse(typeElementNested.isPresent());
+    }
+
+    private DescribeManager getDescribeManager(String swaggerJson) {
+        SwaggerDefinitionService swaggerDefinitionService = new SwaggerDefinitionService();
+        SwaggerParserFactory swaggerFactory = mock(SwaggerParserFactory.class);
+        Swagger swagger = new SwaggerParser().parse(getFileContent(swaggerJson));
+        when(swaggerFactory.createSwaggerParser(any())).thenReturn(swagger);
+
+        return new DescribeManager(swaggerDefinitionService, swaggerFactory);
     }
 
     private String getFileContent(String fileResourcePath) {

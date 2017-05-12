@@ -22,8 +22,10 @@ public class RawActionProvider implements ActionProvider<ServiceConfiguration> {
     @Override
     public List<DescribeServiceActionResponse> describeActions(ServiceConfiguration configuration, DescribeServiceRequest request) {
         if (configuration.getSwaggerUrl() != null) {
+
             return describeManager.getListActions(configuration);
         } else {
+
             return Lists.newArrayList();
         }
     }

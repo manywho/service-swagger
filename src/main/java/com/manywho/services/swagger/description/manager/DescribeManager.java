@@ -10,17 +10,14 @@ import com.manywho.services.swagger.ServiceConfiguration;
 import com.manywho.services.swagger.exception.NotSupportedTypeException;
 import com.manywho.services.swagger.factories.SwaggerParserFactory;
 import com.manywho.services.swagger.description.SwaggerDefinitionService;
-import io.swagger.models.Model;
-import io.swagger.models.Path;
-import io.swagger.models.RefModel;
-import io.swagger.models.Swagger;
+import com.manywho.services.swagger.utilities.TypeConverterUtil;
+import io.swagger.models.*;
 import io.swagger.models.parameters.BodyParameter;
+import io.swagger.models.properties.Property;
 import io.swagger.models.properties.RefProperty;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class DescribeManager {
     private SwaggerDefinitionService swaggerDefinitionService;
@@ -38,40 +35,63 @@ public class DescribeManager {
 
         for (Map.Entry<String, Path> path : swagger.getPaths().entrySet()) {
             String pathAction = path.getKey().startsWith("/") ? path.getKey().substring(1) : path.getKey();
-            String developerName = "";
-            String summary = "";
-            BodyParameter bodyParam = null;
-            String verbPathAction = pathAction;
+
+            String developerName = null;
+            String verbPathAction = null;
+            Operation operation = null;
 
             if (path.getValue().getGet() != null) {
-                developerName = String.format("GET %s", path.getValue().getGet().getSummary());
-                summary = path.getValue().getGet().getSummary();
-                bodyParam = (BodyParameter) swagger.getPaths().get(path.getKey()).getGet().getParameters().get(0);
+                operation = path.getValue().getGet();
+                developerName = String.format("GET %s", operation.getSummary());
                 verbPathAction = "get/" + pathAction;
             } else if (path.getValue().getPost() != null) {
-                developerName = String.format("POST %s", path.getValue().getPost().getSummary());
-                bodyParam = (BodyParameter) swagger.getPaths().get(path.getKey()).getPost().getParameters().get(0);
-                summary = path.getValue().getPost().getSummary();
+                operation = path.getValue().getPost();
+                developerName = String.format("POST %s", operation.getSummary());
                 verbPathAction = "post/" + pathAction;
             }
 
-            RefModel refModel = (RefModel) bodyParam.getSchema();
-            RefProperty refProperty = (RefProperty) swagger.getPaths().get(path.getKey()).getPost()
-                    .getResponses().get("200").getSchema();
+            //ignored not supported verbs
 
-            List<DescribeValue> serviceInputs = Lists.newArrayList();
-            List<DescribeValue> serviceOutputs = Lists.newArrayList();
-            serviceInputs.add(new DescribeValue(refModel.getSimpleRef(), ContentType.Object));
-            serviceOutputs.add(new DescribeValue(refProperty.getSimpleRef(), ContentType.Object));
-
-            customActions.add(new DescribeServiceActionResponse(developerName, summary, verbPathAction, serviceInputs,
-                    serviceOutputs));
+            if (operation != null) {
+                try {
+                    customActions.add(createServiceActionResponse(swagger, path.getKey(), developerName, verbPathAction, operation));
+                } catch (NotSupportedTypeException ex) {
+                    // ignored not supported actions
+                }
+            }
         }
 
         return customActions;
     }
 
-    public List<TypeElement> getListTypeElement(ServiceConfiguration serviceConfiguration) throws Exception {
+    private DescribeServiceActionResponse createServiceActionResponse(Swagger swagger, String path, String developerName, String verbPathAction, Operation operation) {
+        RefProperty refProperty = (RefProperty) swagger.getPaths().get(path).getPost()
+                .getResponses().get("200").getSchema();
+
+        List<DescribeValue> serviceOutputs = Lists.newArrayList();
+        serviceOutputs.add(new DescribeValue(refProperty.getSimpleRef(), ContentType.Object));
+        String summary = operation.getSummary();
+
+        return new DescribeServiceActionResponse(developerName, summary, verbPathAction, getInputs(swagger, operation), serviceOutputs);
+    }
+
+    private List<DescribeValue> getInputs(Swagger swagger, Operation operation) {
+        Map<String, Model> definitions = swagger.getDefinitions();
+        BodyParameter bodyParam = (BodyParameter) operation.getParameters().get(0);
+        RefModel refModel = (RefModel) bodyParam.getSchema();
+        List<DescribeValue> describeValues = Lists.newArrayList();
+        describeValues.add(new DescribeValue(refModel.getSimpleRef(), ContentType.Object));
+        Map.Entry<String, Model> entry = new AbstractMap.SimpleEntry<>(refModel.getSimpleRef(), definitions.get(refModel.getSimpleRef()));
+
+        //validate properties
+        for (Map.Entry<String, Property> propertyEntry : entry.getValue().getProperties().entrySet()) {
+            TypeConverterUtil.convertFromSwaggerToManyWho(propertyEntry.getValue().getType(), propertyEntry.getValue().getFormat());
+        }
+
+        return describeValues;
+    }
+
+    public List<TypeElement> getListTypeElement(ServiceConfiguration serviceConfiguration) {
         List<TypeElement> listOfTypeElements = new ArrayList<>();
 
         if (Strings.isNullOrEmpty(serviceConfiguration.getSwaggerUrl())) {
@@ -82,7 +102,11 @@ public class DescribeManager {
         Map<String, Model> definitions = swagger.getDefinitions();
 
         for (Map.Entry<String, Model> entry : definitions.entrySet()) {
-            listOfTypeElements.add(this.swaggerDefinitionService.createManyWhoMetadataType(entry));
+            try {
+                listOfTypeElements.add(this.swaggerDefinitionService.createManyWhoMetadataType(entry));
+            } catch (NotSupportedTypeException e) {
+                // ignore not supported types
+            }
         }
 
         return listOfTypeElements;
